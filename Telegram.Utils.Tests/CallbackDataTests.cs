@@ -9,15 +9,22 @@ namespace Telegram.Utils.Tests
     {
         public CallbackDataTests()
         {
-            _callbackData = new CallbackData("user", "id", "lang");
+            _defaultCallbackData = new CallbackData("user", "id", "lang");
         }
         
-        private CallbackData _callbackData;
-        
+        private readonly CallbackData _defaultCallbackData;
+
         [Fact]
         public void CallbackData_New_Works()
         {
-            Assert.Equal("user:123456789:ru", _callbackData.New(new
+            Assert.Equal("user:123456789:ru", _defaultCallbackData.New(new
+            {
+                id = "123456789",
+                lang = "ru"
+            }));
+            
+            var callbackData = new CallbackData('.', "user", "id", "lang");
+            Assert.Equal("user.123456789.ru", callbackData.New(new
             {
                 id = "123456789",
                 lang = "ru"
@@ -31,7 +38,7 @@ namespace Telegram.Utils.Tests
             {
                 {"id", "123456789"},
                 {"lang", "ru"}
-            }, _callbackData.Parse("user:123456789:ru"));
+            }, _defaultCallbackData.Parse("user:123456789:ru"));
         }
 
         [Fact]
@@ -42,36 +49,48 @@ namespace Telegram.Utils.Tests
             Assert.Throws<StringNullOrEmptyException>(() => new CallbackData("user", "", "lang"));
             Assert.Throws<StringNullOrEmptyException>(() => new CallbackData("user", "id", null));
             Assert.Throws<StringNullOrEmptyException>(() => new CallbackData("user", null));
+            Assert.Throws<ArgumentException>(() => new CallbackData("use:r", "id", "lang"));
+            Assert.Throws<ArgumentException>(() => new CallbackData('.', "use.r", "id", "lang"));
+            Assert.Throws<ArgumentException>(() => new CallbackData("user", "i:d", "lang"));
+            Assert.Throws<ArgumentException>(() => new CallbackData('.', "user", "id", "l.ang"));
         }
 
         [Fact]
         public void CallbackData_New_Exceptions()
         {
-            Assert.Throws<ArgumentException>(() => _callbackData.New(new
+            Assert.Throws<ArgumentException>(() => _defaultCallbackData.New(new
             {
                 id = "123"
             }));
-            Assert.Throws<StringNullOrEmptyException>(() => _callbackData.New(new
+            Assert.Throws<StringNullOrEmptyException>(() => _defaultCallbackData.New(new
             {
                 id = "123",
                 lang = ""
             }));
-            Assert.Throws<ArgumentException>(() => _callbackData.New(new
+            Assert.Throws<ArgumentException>(() => _defaultCallbackData.New(new
             {
                 id = "123",
                 lang = 123
             }));
-            Assert.Throws<ArgumentException>(() => _callbackData.New(new
+            Assert.Throws<ArgumentException>(() => _defaultCallbackData.New(new
             {
                 id = "123",
                 lng = "s"
             }));
-            Assert.Throws<ArgumentException>(() => _callbackData.New(new
+            Assert.Throws<ArgumentException>(() => _defaultCallbackData.New(new
             {
                 id = "123",
                 lang = "ru",
                 time = "18:00"
             }));
+        }
+
+        [Fact]
+        public void CallbackData_Parse_Exceptions()
+        {
+            Assert.Throws<ArgumentException>(() => _defaultCallbackData.Parse("User:123456789:ru"));
+            Assert.Throws<ArgumentException>(() => _defaultCallbackData.Parse("user:123456789:ru:18-00"));
+            Assert.Throws<ArgumentException>(() => _defaultCallbackData.Parse("user:123456789"));
         }
     }
 }
