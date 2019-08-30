@@ -1,19 +1,14 @@
 using System;
 using System.Collections.Generic;
-using Telegram.Utils.Exceptions;
-using Telegram.Utils;
 using Xunit;
 
 namespace Telegram.Utils.Tests
 {
     public class CallbackDataTests
     {
-        public CallbackDataTests()
-        {
-            _defaultCallbackData = new CallbackData("user", "id", "lang");
-        }
-        
-        private readonly CallbackData _defaultCallbackData;
+        public CallbackDataTests() => _defaultCallbackData = new CallbackData("user", "id", "lang");
+
+        private readonly ICallbackData _defaultCallbackData;
 
         [Fact]
         public void CallbackData_New_Works()
@@ -45,11 +40,11 @@ namespace Telegram.Utils.Tests
         [Fact]
         public void CallbackData_Constructor_Exceptions()
         {
-            Assert.Throws<StringNullOrEmptyException>(() => new CallbackData("", "id", "lang"));
-            Assert.Throws<StringNullOrEmptyException>(() => new CallbackData(null, "id", "lang"));
-            Assert.Throws<StringNullOrEmptyException>(() => new CallbackData("user", "", "lang"));
-            Assert.Throws<StringNullOrEmptyException>(() => new CallbackData("user", "id", null));
-            Assert.Throws<StringNullOrEmptyException>(() => new CallbackData("user", null));
+            Assert.Throws<ArgumentNullException>(() => new CallbackData("", "id", "lang"));
+            Assert.Throws<ArgumentNullException>(() => new CallbackData(null, "id", "lang"));
+            Assert.Throws<ArgumentNullException>(() => new CallbackData("user", null));
+            Assert.Throws<ArgumentException>(() => new CallbackData("user", "", "lang"));
+            Assert.Throws<ArgumentException>(() => new CallbackData("user", "id", null));
             Assert.Throws<ArgumentException>(() => new CallbackData("use:r", "id", "lang"));
             Assert.Throws<ArgumentException>(() => new CallbackData('.', "use.r", "id", "lang"));
             Assert.Throws<ArgumentException>(() => new CallbackData("user", "i:d", "lang"));
@@ -63,7 +58,7 @@ namespace Telegram.Utils.Tests
             {
                 id = "123"
             }));
-            Assert.Throws<StringNullOrEmptyException>(() => _defaultCallbackData.New(new
+            Assert.Throws<ArgumentException>(() => _defaultCallbackData.New(new
             {
                 id = "123",
                 lang = ""
