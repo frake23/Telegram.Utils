@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Telegram.Utils.Exceptions;
+using Telegram.Utils;
 using Xunit;
 
 namespace Telegram.Utils.Tests
